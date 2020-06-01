@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/ericpko/fibonacci"
+	"github.com/ericpko/go-algorithms/pkg/fibonacci"
 )
 
 
 func main() {
-	fmt.Println("The Fibonacci value of 9 is:", fibonacci.Fibonacci(9));
+	fmt.Println("The 9th Fibonacci number is:", fibonacci.Fibonacci(9));
 }
