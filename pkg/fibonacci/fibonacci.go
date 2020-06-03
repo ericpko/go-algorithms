@@ -11,7 +11,7 @@ func Fib(n int) int {
 	return Fib(n - 1) + Fib(n - 2);
 }
 
-// Iterative dynamic programming fibonacci function
+// Iterative dynamic programming Fibonacci function
 func MemoizedFib(n int) int {
 	if (n <= 1) {
 		return n;
