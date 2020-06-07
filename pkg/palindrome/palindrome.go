@@ -41,7 +41,7 @@ func MinInsertions(word string) (int, *[][]int) {
  * of insersions to convert it into a palindrome, return the
  * shortest palindrome of <word> by adding inserts
  *
- * TODO: Must fix on inputs such as pizzapa
+ * TODO: Fix on inputs such as pizzapar
  */
 func MakePalindrome(word string, M *[][]int) string {
 	var n int = len(word)
@@ -52,25 +52,25 @@ func MakePalindrome(word string, M *[][]int) string {
 	// Initialize i and j to the start and end indices of the string.
 	// (Pretend indices are as in psudocode and match indices into M).
 	i, j := 1, n // start and end index of <word> in psudocode respectively
-	i_offset, j_offset := 0, 0
+	offset := 0
 	var numInserts = (*M)[1][n]
 
 	for i < j && numInserts > 0 {
-		if (*M)[i][j] == (*M)[i+1][j-1] {
+		if word[i-1] == word[j-1] {
 			i++
 			j--
-			i_offset--
-			j_offset++
 
 		} else if (*M)[i][j] == 1+(*M)[i+1][j] {
-			palindrome = palindrome[:j+j_offset] + string(word[i-1]) + palindrome[j+j_offset:]
+			palindrome = palindrome[:j+offset] + string(word[i-1]) + palindrome[j+offset:]
 			i++
 			numInserts--
+			offset++ // palindrome grows by 1 character
 
 		} else {
-			palindrome = palindrome[:i-2+i_offset] + string(word[j-1]) + palindrome[i-2+i_offset:]
+			palindrome = palindrome[:i-1+offset] + string(word[j-1]) + palindrome[i-1+offset:]
 			j--
 			numInserts--
+			offset++ // palindrome grows by 1 character
 		}
 	}
 
