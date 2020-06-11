@@ -1,7 +1,5 @@
 package palindrome
 
-import "fmt"
-
 /**
  * Given a word, find the minimum number of insersions needed
  * to convert it into a palindrome
@@ -35,7 +33,58 @@ func MinInsertions(word string) (int, *[][]int) {
 		}
 	}
 
+	// for i := 0; i <= n; i++ {
+	// 	for j := 0; j <= n; j++ {
+	// 		fmt.Printf("%d ", M[i][j])
+	// 		if j == n {
+	// 			fmt.Println()
+	// 		}
+	// 	}
+	// }
+	// fmt.Println()
+
 	return M[1][n], &M
+}
+
+/**
+ * Given a word and the Memoized 2D array of the minimum number
+ * of insersions to convert it into a palindrome, return the
+ * shortest palindrome of <word> by adding inserts
+ */
+func MakePalindrome(word string, M *[][]int) string {
+	var n int = len(word)
+
+	// Initialize the palindrome
+	pal_i, pal_j := "", ""
+
+	// Initialize i and j to the start and end indices of the string.
+	// (Pretend indices are as in psudocode and match indices into M).
+	i, j := 1, n // start and end index of <word> in psudocode respectively
+
+	for i <= j {
+		if i == j {
+			pal_i = pal_i + string(word[i-1])
+			i++
+
+		} else if word[i-1] == word[j-1] {
+			pal_i = pal_i + string(word[i-1])
+			pal_j = string(word[j-1]) + pal_j
+			i++
+			j--
+
+		} else if (*M)[i][j] == 1+(*M)[i+1][j] {
+			pal_i = pal_i + string(word[i-1])
+			pal_j = string(word[i-1]) + pal_j
+			i++
+
+		} else if (*M)[i][j] == 1+(*M)[i][j-1] {
+			pal_i = pal_i + string(word[j-1])
+			pal_j = string(word[j-1]) + pal_j
+			j--
+		}
+	}
+
+	return pal_i + pal_j
 }
 
 /**
@@ -45,51 +94,54 @@ func MinInsertions(word string) (int, *[][]int) {
  *
  * TODO: Fix on inputs such as pizzapar
  */
-func MakePalindrome(word string, M *[][]int) string {
+func MakePalindrome2(word string, M *[][]int) string {
 	var n int = len(word)
 
 	// Initialize the palindrome to <word>
-	var palindrome string = word
+	var pal_i string = ""
+	var pal_j string = ""
 
-	// Initialize i and j to the start and end indices of the string.
-	// (Pretend indices are as in psudocode and match indices into M).
-	i, j := 1, n // start and end index of <word> in psudocode respectively
-	offset := 0
-	i_offset, j_offset := 0, 0
-	var numInserts = (*M)[1][n]
+	// Iterate in opposite direction of MinInsertions
+	for k := n - 1; k >= 1; k-- {
+		for j := n; j >= k+1; j-- {
+			i := j - k
 
-	for i < j && numInserts > 0 {
-		if word[i-1] == word[j-1] {
-			i++
-			j--
+			if (*M)[i][j] == (*M)[i+1][j-1] && word[i-1] == word[j-1] {
+				pal_i = pal_i + string(word[i-1])
+				pal_j = string(word[j-1]) + pal_j
 
-		} else if (*M)[i][j] == 1+(*M)[i+1][j] {
-			palindrome = palindrome[:j] + string(word[i-1]) + palindrome[j:]
-			i++
-			numInserts--
-			offset++ // palindrome grows by 1 character
-			i_offset++
+			} else if (*M)[i][j] == 1+(*M)[i+1][j] {
+				pal_i = pal_i + string(word[i-1])
+				pal_j = string(word[i-1]) + pal_j
 
-		} else if (*M)[i][j] == 1+(*M)[i][j-1] {
-			palindrome = palindrome[:i-1] + string(word[j-1]) + palindrome[i-1:]
-			j--
-			numInserts--
-			offset++ // palindrome grows by 1 character
-			j_offset++
-		}
-	}
-
-	// pizzapar
-
-	for i := 0; i <= n; i++ {
-		for j := 0; j <= n; j++ {
-			fmt.Printf("%d ", (*M)[i][j])
-			if j == n {
-				fmt.Println()
+			} else if (*M)[i][j] == 1+(*M)[i][j-1] {
+				pal_i = pal_i + string(word[j-1])
+				pal_j = string(word[j-1]) + pal_j
 			}
 		}
 	}
-	fmt.Println()
+
+	return pal_i + pal_j
+}
+
+// TODO: fix
+func MakePalindromeRec(word, palindrome string, M *[][]int, i, j int) string {
+
+	if i >= j {
+		return palindrome
+	}
+
+	if (*M)[i][j] == (*M)[i+1][j-1] && word[i-1] == word[j-1] {
+		palindrome = MakePalindromeRec(word, palindrome, M, i+1, j-1)
+
+	} else if (*M)[i][j] == 1+(*M)[i+1][j] {
+		palindrome = palindrome[:j] + string(word[i-1]) + palindrome[j:]
+		palindrome = MakePalindromeRec(word, palindrome, M, i+1, j)
+
+	} else if (*M)[i][j] == 1+(*M)[i][j-1] {
+		palindrome = palindrome[:i-1] + string(word[j-1]) + palindrome[i-1:]
+		palindrome = MakePalindromeRec(word, palindrome, M, i, j-1)
+	}
 
 	return palindrome
 }
