@@ -1,5 +1,7 @@
 package palindrome
 
+import "fmt"
+
 /**
  * Given a word, find the minimum number of insersions needed
  * to convert it into a palindrome
@@ -53,6 +55,7 @@ func MakePalindrome(word string, M *[][]int) string {
 	// (Pretend indices are as in psudocode and match indices into M).
 	i, j := 1, n // start and end index of <word> in psudocode respectively
 	offset := 0
+	i_offset, j_offset := 0, 0
 	var numInserts = (*M)[1][n]
 
 	for i < j && numInserts > 0 {
@@ -61,28 +64,32 @@ func MakePalindrome(word string, M *[][]int) string {
 			j--
 
 		} else if (*M)[i][j] == 1+(*M)[i+1][j] {
-			palindrome = palindrome[:j+offset] + string(word[i-1]) + palindrome[j+offset:]
+			palindrome = palindrome[:j] + string(word[i-1]) + palindrome[j:]
 			i++
 			numInserts--
 			offset++ // palindrome grows by 1 character
+			i_offset++
 
-		} else {
-			palindrome = palindrome[:i-1+offset] + string(word[j-1]) + palindrome[i-1+offset:]
+		} else if (*M)[i][j] == 1+(*M)[i][j-1] {
+			palindrome = palindrome[:i-1] + string(word[j-1]) + palindrome[i-1:]
 			j--
 			numInserts--
 			offset++ // palindrome grows by 1 character
+			j_offset++
 		}
 	}
 
-	// for i := 0; i <= n; i++ {
-	// 	for j := 0; j <= n; j++ {
-	// 		fmt.Printf("%d ", (*M)[i][j])
-	// 		if j == n {
-	// 			fmt.Println()
-	// 		}
-	// 	}
-	// }
-	// fmt.Println()
+	// pizzapar
+
+	for i := 0; i <= n; i++ {
+		for j := 0; j <= n; j++ {
+			fmt.Printf("%d ", (*M)[i][j])
+			if j == n {
+				fmt.Println()
+			}
+		}
+	}
+	fmt.Println()
 
 	return palindrome
 }
