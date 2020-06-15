@@ -1,7 +1,5 @@
 package palindrome
 
-import "fmt"
-
 /**
  * Given a word, find the minimum number of insersions needed
  * to convert it into a palindrome. This returns the same as
@@ -120,15 +118,16 @@ func MinInsertions(word string) (int, *[][]int) {
 		}
 	}
 
-	for i := 0; i <= n; i++ {
-		for j := 0; j <= n; j++ {
-			fmt.Printf("%d ", M[i][j])
-			if j == n {
-				fmt.Println()
-			}
-		}
-	}
-	fmt.Println()
+	// For testing.. to see what M looks like
+	// for i := 0; i <= n; i++ {
+	// 	for j := 0; j <= n; j++ {
+	// 		fmt.Printf("%d ", M[i][j])
+	// 		if j == n {
+	// 			fmt.Println()
+	// 		}
+	// 	}
+	// }
+	// fmt.Println()
 
 	return M[1][n], &M
 }
