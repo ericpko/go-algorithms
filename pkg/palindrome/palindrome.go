@@ -1,158 +1,6 @@
 package palindrome
 
-/**
- * Given a word, find the minimum number of insersions needed
- * to convert it into a palindrome
- */
-func MinInsertions(word string) (int, *[][]int) {
-	n := len(word)
-
-	// Make an (n+1) x (n+1) matrix
-	var M [][]int = make([][]int, n+1)
-	for i := 0; i < n+1; i++ { // for each row
-		M[i] = make([]int, n+1)
-	}
-
-	// Set M[i][j] = 0 for all i >= j
-	for i := 0; i <= n; i++ {
-		for j := 0; j <= i; j++ {
-			M[i][j] = 0
-		}
-	}
-
-	for k := 1; k <= n-1; k++ {
-		for i := 1; i <= n-k; i++ {
-			j := i + k
-
-			if word[i-1] == word[j-1] {
-				M[i][j] = M[i+1][j-1]
-
-			} else {
-				M[i][j] = 1 + min(M[i+1][j], M[i][j-1])
-			}
-		}
-	}
-
-	// for i := 0; i <= n; i++ {
-	// 	for j := 0; j <= n; j++ {
-	// 		fmt.Printf("%d ", M[i][j])
-	// 		if j == n {
-	// 			fmt.Println()
-	// 		}
-	// 	}
-	// }
-	// fmt.Println()
-
-	return M[1][n], &M
-}
-
-/**
- * Given a word and the Memoized 2D array of the minimum number
- * of insersions to convert it into a palindrome, return the
- * shortest palindrome of <word> by adding inserts
- */
-func MakePalindrome(word string, M *[][]int) string {
-	var n int = len(word)
-
-	// Initialize the palindrome
-	pal_i, pal_j := "", ""
-
-	// Initialize i and j to the start and end indices of the string.
-	// (Pretend indices are as in psudocode and match indices into M).
-	i, j := 1, n // start and end index of <word> in psudocode respectively
-
-	for i <= j {
-		if i == j {
-			pal_i = pal_i + string(word[i-1])
-			i++
-
-		} else if word[i-1] == word[j-1] {
-			pal_i = pal_i + string(word[i-1])
-			pal_j = string(word[j-1]) + pal_j
-			i++
-			j--
-
-		} else if (*M)[i][j] == 1+(*M)[i+1][j] {
-			pal_i = pal_i + string(word[i-1])
-			pal_j = string(word[i-1]) + pal_j
-			i++
-
-		} else if (*M)[i][j] == 1+(*M)[i][j-1] {
-			pal_i = pal_i + string(word[j-1])
-			pal_j = string(word[j-1]) + pal_j
-			j--
-		}
-	}
-
-	return pal_i + pal_j
-}
-
-/**
- * Given a word and the Memoized 2D array of the minimum number
- * of insersions to convert it into a palindrome, return the
- * shortest palindrome of <word> by adding inserts
- *
- * TODO: Fix on inputs such as pizzapar
- */
-func MakePalindrome2(word string, M *[][]int) string {
-	var n int = len(word)
-
-	// Initialize the palindrome to <word>
-	var pal_i string = ""
-	var pal_j string = ""
-
-	// Iterate in opposite direction of MinInsertions
-	for k := n - 1; k >= 1; k-- {
-		for j := n; j >= k+1; j-- {
-			i := j - k
-
-			if (*M)[i][j] == (*M)[i+1][j-1] && word[i-1] == word[j-1] {
-				pal_i = pal_i + string(word[i-1])
-				pal_j = string(word[j-1]) + pal_j
-
-			} else if (*M)[i][j] == 1+(*M)[i+1][j] {
-				pal_i = pal_i + string(word[i-1])
-				pal_j = string(word[i-1]) + pal_j
-
-			} else if (*M)[i][j] == 1+(*M)[i][j-1] {
-				pal_i = pal_i + string(word[j-1])
-				pal_j = string(word[j-1]) + pal_j
-			}
-		}
-	}
-
-	return pal_i + pal_j
-}
-
-// TODO: fix
-func MakePalindromeRec(word, palindrome string, M *[][]int, i, j int) string {
-
-	if i >= j {
-		return palindrome
-	}
-
-	if (*M)[i][j] == (*M)[i+1][j-1] && word[i-1] == word[j-1] {
-		palindrome = MakePalindromeRec(word, palindrome, M, i+1, j-1)
-
-	} else if (*M)[i][j] == 1+(*M)[i+1][j] {
-		palindrome = palindrome[:j] + string(word[i-1]) + palindrome[j:]
-		palindrome = MakePalindromeRec(word, palindrome, M, i+1, j)
-
-	} else if (*M)[i][j] == 1+(*M)[i][j-1] {
-		palindrome = palindrome[:i-1] + string(word[j-1]) + palindrome[i-1:]
-		palindrome = MakePalindromeRec(word, palindrome, M, i, j-1)
-	}
-
-	return palindrome
-}
-
-// Min returns the smaller int of x or y.
-func min(x, y int) int {
-	if x < y {
-		return x
-	}
-	return y
-}
+import "fmt"
 
 /**
  * Given a word, find the minimum number of insersions needed
@@ -236,6 +84,185 @@ func MinInsertMemoization(word string) int {
 	}
 
 	return minInserts(0, n-1)
+}
+
+/**
+ * Given a word, find the minimum number of insersions needed
+ * to convert it into a palindrome.
+ * NOTE: This is a bottom-up dynamic programming version
+ */
+func MinInsertions(word string) (int, *[][]int) {
+	n := len(word)
+
+	// Make an (n+1) x (n+1) matrix
+	var M [][]int = make([][]int, n+1)
+	for i := 0; i < n+1; i++ { // for each row
+		M[i] = make([]int, n+1)
+	}
+
+	// Set M[i][j] = 0 for all i >= j
+	for i := 0; i <= n; i++ {
+		for j := 0; j <= i; j++ {
+			M[i][j] = 0
+		}
+	}
+
+	for k := 1; k <= n-1; k++ {
+		for i := 1; i <= n-k; i++ {
+			j := i + k
+
+			if word[i-1] == word[j-1] {
+				M[i][j] = M[i+1][j-1]
+
+			} else {
+				M[i][j] = 1 + min(M[i+1][j], M[i][j-1])
+			}
+		}
+	}
+
+	for i := 0; i <= n; i++ {
+		for j := 0; j <= n; j++ {
+			fmt.Printf("%d ", M[i][j])
+			if j == n {
+				fmt.Println()
+			}
+		}
+	}
+	fmt.Println()
+
+	return M[1][n], &M
+}
+
+/**
+ * Given a word and the Memoized 2D array of the minimum number
+ * of insersions to convert it into a palindrome, return the
+ * shortest palindrome of <word> by adding inserts
+ */
+func MakePalindrome(word string, M *[][]int) string {
+	var n int = len(word)
+
+	// Initialize the palindrome
+	pal_i, pal_j := "", ""
+
+	// Initialize i and j to the start and end indices of the string.
+	// (Pretend indices are as in psudocode and match indices into M).
+	i, j := 1, n // start and end index of <word> in psudocode respectively
+
+	for i <= j {
+		if i == j {
+			pal_i = pal_i + string(word[i-1])
+			i++
+
+		} else if word[i-1] == word[j-1] {
+			pal_i = pal_i + string(word[i-1])
+			pal_j = string(word[j-1]) + pal_j
+			i++
+			j--
+
+		} else if (*M)[i][j] == 1+(*M)[i+1][j] {
+			pal_i = pal_i + string(word[i-1])
+			pal_j = string(word[i-1]) + pal_j
+			i++
+
+		} else if (*M)[i][j] == 1+(*M)[i][j-1] {
+			pal_i = pal_i + string(word[j-1])
+			pal_j = string(word[j-1]) + pal_j
+			j--
+		}
+	}
+
+	return pal_i + pal_j
+}
+
+/**
+ * Given a word and the Memoized 2D array of the minimum number
+ * of insersions to convert it into a palindrome, return the
+ * shortest palindrome of <word> by adding inserts
+ * FIXME: Fix this!
+ */
+func MakePalindrome2(word string, M *[][]int) string {
+	var n int = len(word)
+
+	// Initialize the palindrome
+	palindrome := word
+
+	// Initialize i and j to the start and end indices of the string.
+	// (Pretend indices are as in psudocode and match indices into M).
+	i, j := 1, n // start and end index of <word> in psudocode respectively
+	offset_i, offset_j := 0, 0
+	balance := 0
+	numInserts := (*M)[1][n]
+
+	for i < j && numInserts > 0 {
+
+		if (*M)[i][j] == (*M)[i+1][j-1] && word[i-1] == word[j-1] {
+			i++
+			j--
+			// offset_i--
+			// offset_j++
+
+		} else if (*M)[i][j] == 1+(*M)[i+1][j] {
+			palindrome = palindrome[:j+offset_j] + string(word[i-1]) + palindrome[j+offset_j:]
+			i++
+			balance++
+			if balance <= 0 {
+				offset_j--
+			}
+
+		} else if (*M)[i][j] == 1+(*M)[i][j-1] {
+			palindrome = palindrome[:i-1+offset_i] + string(word[j-1]) + palindrome[i-1+offset_i:]
+			j--
+			balance--
+			if balance >= 0 {
+				offset_i++
+			}
+		}
+	}
+
+	return palindrome
+}
+
+/**
+ * Given a <word>, return the minimum sized palindrome
+ */
+func MakeMinPalindrome(word string) string {
+
+	_, M := MinInsertions(word)
+	palindrome := MakePalindrome(word, M)
+
+	return palindrome
+}
+
+/**
+ * FIXME: Fix this!
+ */
+func MakePalindromeRec(word, palindrome string, M *[][]int, i, j int) string {
+
+	if i >= j {
+		return palindrome
+	}
+
+	if (*M)[i][j] == (*M)[i+1][j-1] && word[i-1] == word[j-1] {
+		palindrome = MakePalindromeRec(word, palindrome, M, i+1, j-1)
+
+	} else if (*M)[i][j] == 1+(*M)[i+1][j] {
+		palindrome = palindrome[:j] + string(word[i-1]) + palindrome[j:]
+		palindrome = MakePalindromeRec(word, palindrome, M, i+1, j)
+
+	} else if (*M)[i][j] == 1+(*M)[i][j-1] {
+		palindrome = palindrome[:i-1] + string(word[j-1]) + palindrome[i-1:]
+		palindrome = MakePalindromeRec(word, palindrome, M, i, j-1)
+	}
+
+	return palindrome
+}
+
+// Min returns the smaller int of x or y.
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
 }
 
 /**
