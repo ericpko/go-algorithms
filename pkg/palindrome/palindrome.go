@@ -174,6 +174,17 @@ func MakePalindrome(word string, M *[][]int) string {
 }
 
 /**
+ * Given a <word>, return the minimum sized palindrome
+ */
+func MakeMinPalindrome(word string) string {
+
+	_, M := MinInsertions(word)
+	palindrome := MakePalindrome(word, M)
+
+	return palindrome
+}
+
+/**
  * Given a word and the Memoized 2D array of the minimum number
  * of insersions to convert it into a palindrome, return the
  * shortest palindrome of <word> by adding inserts
@@ -217,17 +228,6 @@ func MakePalindrome2(word string, M *[][]int) string {
 			}
 		}
 	}
-
-	return palindrome
-}
-
-/**
- * Given a <word>, return the minimum sized palindrome
- */
-func MakeMinPalindrome(word string) string {
-
-	_, M := MinInsertions(word)
-	palindrome := MakePalindrome(word, M)
 
 	return palindrome
 }
